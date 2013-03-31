@@ -60,7 +60,7 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
   c.step = function() {
       var newPf = new yoob.Playfield();
       newPf.setDefault('Space');
-      pf.map(newPf, evalState, -1, -1, +1, +1);
+      evolve_playfield(pf, newPf);
       pf = newPf;
       var output = document.getElementById('output');
       output.innerHTML = pf.dump(dumper);
