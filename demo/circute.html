@@ -35,26 +35,11 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
   var c = new yoob.Controller();
   var pf;
   
-  var dumper = function(state) {
-      if (state === 'Space') return ' ';
-      if (state === 'NAND') return 'N';
-      if (state === 'Wire') return '=';
-      if (state === 'Spark') return '*';
-      if (state === 'Tail') return '-';
-      return '?';
-  };
-
   c.load = function(text) {
       pf = new yoob.Playfield();
       pf.setDefault('Space');
-      pf.load(0, 0, text, function(c) {
-        if (c === ' ') return 'Space';
-        if (c === 'N') return 'NAND';
-        if (c === '=') return 'Wire';
-        if (c === '*') return 'Spark';
-        if (c === '-') return 'Tail';
-      });
-      output.innerHTML = pf.dump(dumper);
+      pf.load(0, 0, text, loadMapper);
+      output.innerHTML = pf.dump(dumpMapper);
   };
 
   c.step = function() {
@@ -63,7 +48,7 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
       evolve_playfield(pf, newPf);
       pf = newPf;
       var output = document.getElementById('output');
-      output.innerHTML = pf.dump(dumper);
+      output.innerHTML = pf.dump(dumpMapper);
   };
 
   c.connect({

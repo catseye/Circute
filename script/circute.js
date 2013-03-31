@@ -21,6 +21,20 @@ function in_nbhd_eq(pf, x, y, stateId, nbhd) {
 function evolve_playfield(pf, new_pf) {
   pf.map(new_pf, evalState, -1, -1, 1, 1);
 }
+function loadMapper(c) {
+  if (c === ' ') return 'Space';
+  if (c === '#') return 'Spark';
+  if (c === '-') return 'Tail';
+  if (c === '=') return 'Wire';
+  if (c === 'N') return 'NAND';
+};
+function dumpMapper(s) {
+  if (s === 'Space') return ' ';
+  if (s === 'Spark') return '#';
+  if (s === 'Tail') return '-';
+  if (s === 'Wire') return '=';
+  if (s === 'NAND') return 'N';
+};
 function eval_Space(pf, x, y) {
 var id;
 return 'Space';
