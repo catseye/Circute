@@ -2,10 +2,28 @@
 <head>
   <meta charset="utf-8">
   <title>Circute Demo</title>
+  <style>
+#input {
+  display: none;
+}
+#output {
+  border: 1px solid blue;
+}
+#load {
+  display: none;
+}
+  </style>
 </head>
 <body>
 
 <h1>Circute Demo</h1>
+
+<button id="load">Load</button>
+<button id="edit">Edit</button>
+<button id="start">Start</button>
+<button id="stop">Stop</button>
+<button id="step">Step</button>
+Speed: <input id="speed" type="range" min="0" max="200" value="0" />
 
 <textarea id="input" rows="10">
    =========
@@ -17,14 +35,7 @@
    =========
 </textarea>
 
-<pre id="output" style="border: 1px solid blue">
-</pre>
-
-<button id="start">Start</button>
-<button id="stop">Stop</button>
-<button id="step">Step</button>
-<button id="load">Load</button>
-Speed: <input id="speed" type="range" min="0" max="200" value="0" />
+<pre id="output"></pre>
 
 </body>
 <script src="yoob/controller.js"></script>
@@ -47,7 +58,6 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
       newPf.setDefault('Space');
       evolve_playfield(pf, newPf);
       pf = newPf;
-      var output = document.getElementById('output');
       output.innerHTML = pf.dump(dumpMapper);
   };
 
@@ -56,7 +66,11 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
     'stop': 'stop',
     'step': 'step',
     'load': 'load',
+    'edit': 'edit',
     'source': 'input',
+    'display': 'output',
     'speed': 'speed'
   });
+  
+  c.click_load();
 </script>
