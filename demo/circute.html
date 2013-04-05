@@ -25,6 +25,21 @@
 <button id="step">Step</button>
 Speed: <input id="speed" type="range" min="0" max="200" value="0" />
 
+<span id="select_source_container">
+  <select id="select_source">
+    <option>(select one...)</option>
+    <option>and</option>
+    <option>gated</option>
+    <option>or</option>
+    <option>osc</option>
+    <option>smallosc</option>
+    <option>sr</option>
+    <option>store_hmm</option>
+    <option>xor</option>
+    <option>xor2</option>
+  </select>
+</span>
+
 <textarea id="input" rows="10">
    =========
    =       =
@@ -36,6 +51,175 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
 </textarea>
 
 <pre id="output"></pre>
+
+<div id="and" style="display: none;"
+>                 =
+                 =
+   #######==     =     =========
+   #       =     =     =       =
+ ==N==     =   ==N==   =     ==N==
+ =   =     =   =   =   =     =   =
+ =====     =   =====   =     =====
+   =       =     =     =       =
+   ==============N==============
+
+   =========
+   =       =
+ ==N==     =
+ =   =     =
+ =====     =
+   =       =
+   =========</div>
+
+
+<div id="gated" style="display: none;"
+>  ####
+  #  #
+ =N###
+ =   #
+ =  ###
+ =  # #
+ =  #N#
+ =   =
+ =   =
+ =   =
+ =   =
+ =   =
+ =   =
+ =   =
+ =   =
+ =   =
+ =   =
+ =   =
+ =   =
+ =
+ ===============================================================#
+</div>
+
+
+<div id="or" style="display: none;"
+>                  =
+                  =
+   #######==   ===N===   =========
+   #       =   =     =   =       =
+ ==N==     = ==N== ==N== =     ==N==
+ =   =     = =   = =   = =     =   =
+ =====     = ===== ===== =     =====
+   =       =   =     =   =       =
+   =============     =============
+</div>
+
+
+<div id="osc" style="display: none;"
+>   =========
+   =       =
+ ==N==     =
+ =   =     =
+ =====     =
+   =       =
+   =========</div>
+
+
+<div id="smallosc" style="display: none;"
+> ============================================================================
+ =
+=N#
+==
+</div>
+
+
+<div id="sr" style="display: none;"
+>
+  #      #
+  #      #
+  #      #
+  #####  #####
+  #   #  #   #
+ =N## # =N## #
+ =  # # =  # #
+ = =N## = =N##
+ = =    = =
+ = =    = =
+ = =    = =
+ = = #  = =
+ # = =  = #
+ # = =  = #
+ # = =  = #
+ # = =  = #
+ # = =  = #
+ # = =  = #
+ # = =  = #
+ # = =  = #
+ # ====== #
+</div>
+
+
+<div id="store_hmm" style="display: none;"
+>
+
+   ==========
+   =   =    =
+  #N# ===   =
+  # # = =   =
+  ### =N=   =
+   #   #   #N#
+   #####   # #
+           ###
+            #
+           =N=
+           = =
+           === ==#
+            =  =
+            ====</div>
+
+
+<div id="xor" style="display: none;"
+>
+
+                  ==========================
+                  =                        =
+        ====   ###N###   ====              =
+        =  =   #     #   =  =              =
+       =N= =  =N=   =N=  = =N=             =
+       = = =  = =   = =  = = =       ##N====
+       === =  ===   ===  = ===       # =
+        =  =   =     =   =  =        # =======================
+        ========     ========        #
+               =     =               #
+               =     =               #
+               =     =               #
+               =     =               #
+               =     =               #
+               =     =               #
+               ===N===               #
+                  #                  #
+                  #                  #
+                  ####################</div>
+
+
+<div id="xor2" style="display: none;"
+>
+
+                  ==========================
+                  =                        =
+        ====   ###N###   ====              =
+        =  =   #     #   =  =              =
+       =N= =  =N=   =N=  = =N=             =
+       = = =  = =   = =  = = =       ##N====
+       === =  ===   ===  = ===       # =
+        =  =   =     =   =  =        # =======================
+        ====   =     =   ====        #
+           =   =     =   =           #
+          ===  =     =  ===          #
+          = =  =     =  = =          #
+          ===  =     =  =N=          #
+           =   =     =   =           #
+           =====     =====           #
+               ===N===               #
+                  #                  #
+                  #                  #
+                  ####################</div>
+
 
 </body>
 <script src="yoob/controller.js"></script>
@@ -67,9 +251,10 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
     'step': 'step',
     'load': 'load',
     'edit': 'edit',
+    'speed': 'speed',
+    'select': 'select_source',
     'source': 'input',
-    'display': 'output',
-    'speed': 'speed'
+    'display': 'output'
   });
   
   c.click_load();
