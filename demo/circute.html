@@ -6,10 +6,14 @@
 #input {
   display: none;
 }
-#output {
+#display_container {
+  border: 1px solid red;
+  padding: 4px;
+}
+#display_text {
   border: 1px solid blue;
 }
-#canvas {
+#display_canvas {
   display: none;
   border: 1px solid green;
 }
@@ -45,7 +49,7 @@ Example:
   </select>
 </span>
 
-<textarea id="input" rows="10">
+<textarea id="input" rows="20" cols="80">
    =========
    =       =
  ==N==     =
@@ -55,16 +59,18 @@ Example:
    =========
 </textarea>
 
-Depict with:
-<select id="select_depiction">
-  <option>text</option>
-  <option>canvas</option>
-</select>
-
-<pre id="output"></pre>
-<canvas id="canvas" width="400" height="250">
-  There would be an HTML5 canvas here, but your browser isn't displaying it.
-</canvas>
+<div id="display_container">
+  Depict with:
+  <select id="select_depiction">
+    <option>text</option>
+    <option>canvas</option>
+  </select>
+  
+  <pre id="display_text"></pre>
+  <canvas id="display_canvas" width="400" height="250">
+    There would be an HTML5 canvas here, but your browser isn't displaying it.
+  </canvas>
+</div>
 
 <div id="and" style="display: none;"
 >                 =
@@ -242,18 +248,17 @@ Depict with:
 <script src="yoob/playfield-canvas-view.js"></script>
 <script src="../script/circute.js"></script>
 <script>
-  var output = document.getElementById('output');
-  var canvas = document.getElementById('canvas');
-  var currentView = 'text';
-
-  var c = new yoob.Controller();
   var pf;
 
-  var htmlView = new yoob.PlayfieldHTMLView().init(pf, output);
+  // Text view
+  var displayText = document.getElementById('display_text');
+  var htmlView = new yoob.PlayfieldHTMLView().init(pf, displayText);
   htmlView.render = function(state) {
       return dumpMapper(state);
   };
 
+  // Canvas view
+  var displayCanvas = document.getElementById('display_canvas');
   var colourMap = {
       'Space': '#ffffff',
       'Spark': '#ff0000',
@@ -261,45 +266,46 @@ Depict with:
       'Wire': '#ffff00',
       'NAND': '#0000ff'
   };
-
-  var canvasView = new yoob.PlayfieldCanvasView().init(pf, canvas);
+  var canvasView = new yoob.PlayfieldCanvasView().init(pf, displayCanvas);
   canvasView.drawCell = function(ctx, value, playfieldX, playfieldY,
                                  canvasX, canvasY, cellWidth, cellHeight) {
       ctx.fillStyle = colourMap[value] || '#ffffff';
       ctx.fillRect(canvasX, canvasY, cellWidth, cellHeight);
   };
-  c.views = {
+
+  // "View Manager"
+  var currentView = 'text';
+  var views = {
       'text': htmlView,
       'canvas': canvasView
+  };
+  var draw = function() {
+      views[currentView].pf = pf;
+      views[currentView].draw();
   };
 
   var selectDepiction = document.getElementById('select_depiction');
   selectDepiction.onchange = function() {
       var value = selectDepiction.options[selectDepiction.selectedIndex].value;
       if (value === 'text') {
-          output.style.display = 'block';
-          canvas.style.display = 'none';
-          currentView = value;
-          c.draw();
+          displayText.style.display = 'block';
+          displayCanvas.style.display = 'none';
       } else {
-          output.style.display = 'none';
-          canvas.style.display = 'block';
-          currentView = value;
-          c.draw();
+          displayText.style.display = 'none';
+          displayCanvas.style.display = 'block';
       }
+      currentView = value;
+      draw();
   };
 
-  // this isn't overriding anything
-  c.draw = function() {
-      this.views[currentView].pf = pf;
-      this.views[currentView].draw();
-  };
+  // Controller.  We don't subclass, we just monkeypatch.
+  var c = new yoob.Controller();
 
   c.load = function(text) {
       pf = new yoob.Playfield();
       pf.setDefault('Space');
       pf.load(0, 0, text, loadMapper);
-      this.draw();
+      draw();
   };
 
   c.step = function() {
@@ -307,7 +313,7 @@ Depict with:
       newPf.setDefault('Space');
       evolve_playfield(pf, newPf);
       pf = newPf;
-      this.draw();
+      draw();
   };
 
   c.connect({
@@ -319,7 +325,7 @@ Depict with:
     'speed': 'speed',
     'select': 'select_source',
     'source': 'input',
-    'display': 'output'
+    'display': 'display_container'
   });
   
   c.click_load();
