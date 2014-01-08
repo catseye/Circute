@@ -248,14 +248,25 @@ Depict with:
 
   var c = new yoob.Controller();
   var pf;
+
   var htmlView = new yoob.PlayfieldHTMLView().init(pf, output);
   htmlView.render = function(state) {
       return dumpMapper(state);
   };
-  // TODO obviously not quite this
-  var canvasView = new yoob.PlayfieldHTMLView().init(pf, output);
-  canvasView.render = function(state) {
-      return state;
+
+  var colourMap = {
+      'Space': '#ffffff',
+      'Spark': '#ff0000',
+      'Tail': '#a0a0a0',
+      'Wire': '#ffff00',
+      'NAND': '#0000ff'
+  };
+
+  var canvasView = new yoob.PlayfieldCanvasView().init(pf, canvas);
+  canvasView.drawCell = function(ctx, value, playfieldX, playfieldY,
+                                 canvasX, canvasY, cellWidth, cellHeight) {
+      ctx.fillStyle = colourMap[value] || '#ffffff';
+      ctx.fillRect(canvasX, canvasY, cellWidth, cellHeight);
   };
   c.views = {
       'text': htmlView,
@@ -266,26 +277,29 @@ Depict with:
   selectDepiction.onchange = function() {
       var value = selectDepiction.options[selectDepiction.selectedIndex].value;
       if (value === 'text') {
-          /*
           output.style.display = 'block';
           canvas.style.display = 'none';
-          */
           currentView = value;
+          c.draw();
       } else {
-          /*
           output.style.display = 'none';
           canvas.style.display = 'block';
-          */
           currentView = value;
+          c.draw();
       }
+  };
+
+  // this isn't overriding anything
+  c.draw = function() {
+      this.views[currentView].pf = pf;
+      this.views[currentView].draw();
   };
 
   c.load = function(text) {
       pf = new yoob.Playfield();
       pf.setDefault('Space');
       pf.load(0, 0, text, loadMapper);
-      this.views[currentView].pf = pf;
-      this.views[currentView].draw();
+      this.draw();
   };
 
   c.step = function() {
@@ -293,8 +307,7 @@ Depict with:
       newPf.setDefault('Space');
       evolve_playfield(pf, newPf);
       pf = newPf;
-      this.views[currentView].pf = pf;
-      this.views[currentView].draw();
+      this.draw();
   };
 
   c.connect({

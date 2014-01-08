@@ -18,6 +18,9 @@ yoob.PlayfieldCanvasView = function() {
     this.init = function(pf, canvas) {
         this.pf = pf;
         this.canvas = canvas;
+        this.cursors = [];
+        this.cellWidth = 8;
+        this.cellHeight = 8;
         return this;
     };
     
