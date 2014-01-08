@@ -9,6 +9,10 @@
 #output {
   border: 1px solid blue;
 }
+#canvas {
+  display: none;
+  border: 1px solid green;
+}
 #load {
   display: none;
 }
@@ -23,8 +27,9 @@
 <button id="start">Start</button>
 <button id="stop">Stop</button>
 <button id="step">Step</button>
-Speed: <input id="speed" type="range" min="0" max="200" value="0" />
+Speed: <input id="speed" type="range" min="0" max="200" value="0" /><br />
 
+Example: 
 <span id="select_source_container">
   <select id="select_source">
     <option>(select one...)</option>
@@ -50,7 +55,16 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
    =========
 </textarea>
 
+Depict with:
+<select id="select_depiction">
+  <option>text</option>
+  <option>canvas</option>
+</select>
+
 <pre id="output"></pre>
+<canvas id="canvas" width="400" height="250">
+  There would be an HTML5 canvas here, but your browser isn't displaying it.
+</canvas>
 
 <div id="and" style="display: none;"
 >                 =
@@ -225,21 +239,53 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
 <script src="yoob/controller.js"></script>
 <script src="yoob/playfield.js"></script>
 <script src="yoob/playfield-html-view.js"></script>
+<script src="yoob/playfield-canvas-view.js"></script>
 <script src="../script/circute.js"></script>
 <script>
   var output = document.getElementById('output');
+  var canvas = document.getElementById('canvas');
+  var currentView = 'text';
+
   var c = new yoob.Controller();
   var pf;
+  var htmlView = new yoob.PlayfieldHTMLView().init(pf, output);
+  htmlView.render = function(state) {
+      return dumpMapper(state);
+  };
+  // TODO obviously not quite this
+  var canvasView = new yoob.PlayfieldHTMLView().init(pf, output);
+  canvasView.render = function(state) {
+      return state;
+  };
+  c.views = {
+      'text': htmlView,
+      'canvas': canvasView
+  };
+
+  var selectDepiction = document.getElementById('select_depiction');
+  selectDepiction.onchange = function() {
+      var value = selectDepiction.options[selectDepiction.selectedIndex].value;
+      if (value === 'text') {
+          /*
+          output.style.display = 'block';
+          canvas.style.display = 'none';
+          */
+          currentView = value;
+      } else {
+          /*
+          output.style.display = 'none';
+          canvas.style.display = 'block';
+          */
+          currentView = value;
+      }
+  };
 
   c.load = function(text) {
       pf = new yoob.Playfield();
       pf.setDefault('Space');
       pf.load(0, 0, text, loadMapper);
-      this.view = new yoob.PlayfieldHTMLView().init(pf, output);
-      this.view.render = function(state) {
-          return dumpMapper(state);
-      };
-      this.view.draw();
+      this.views[currentView].pf = pf;
+      this.views[currentView].draw();
   };
 
   c.step = function() {
@@ -247,8 +293,8 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
       newPf.setDefault('Space');
       evolve_playfield(pf, newPf);
       pf = newPf;
-      this.view.pf = pf;
-      this.view.draw();
+      this.views[currentView].pf = pf;
+      this.views[currentView].draw();
   };
 
   c.connect({
