@@ -224,17 +224,22 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
 </body>
 <script src="yoob/controller.js"></script>
 <script src="yoob/playfield.js"></script>
+<script src="yoob/playfield-html-view.js"></script>
 <script src="../script/circute.js"></script>
 <script>
   var output = document.getElementById('output');
   var c = new yoob.Controller();
   var pf;
-  
+
   c.load = function(text) {
       pf = new yoob.Playfield();
       pf.setDefault('Space');
       pf.load(0, 0, text, loadMapper);
-      output.innerHTML = pf.dump(dumpMapper);
+      this.view = new yoob.PlayfieldHTMLView().init(pf, output);
+      this.view.render = function(state) {
+          return dumpMapper(state);
+      };
+      this.view.draw();
   };
 
   c.step = function() {
@@ -242,7 +247,8 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
       newPf.setDefault('Space');
       evolve_playfield(pf, newPf);
       pf = newPf;
-      output.innerHTML = pf.dump(dumpMapper);
+      this.view.pf = pf;
+      this.view.draw();
   };
 
   c.connect({
