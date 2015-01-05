@@ -7,7 +7,6 @@
   display: none;
 }
 #display_container {
-  border: 1px solid red;
   padding: 4px;
 }
 #display_text {
@@ -18,6 +17,9 @@
   border: 1px solid green;
 }
 #load {
+  display: none;
+}
+.example_configuration {
   display: none;
 }
   </style>
@@ -31,23 +33,12 @@
 <button id="start">Start</button>
 <button id="stop">Stop</button>
 <button id="step">Step</button>
-Speed: <input id="speed" type="range" min="0" max="200" value="0" /><br />
+<button id="reset">Reset</button>
+Speed: <input id="speed" type="range" min="0" max="200" value="0" />
 
-Example: 
-<span id="select_source_container">
-  <select id="select_source">
-    <option>(select one...)</option>
-    <option>and</option>
-    <option>gated</option>
-    <option>or</option>
-    <option>osc</option>
-    <option>smallosc</option>
-    <option>sr</option>
-    <option>store_hmm</option>
-    <option>xor</option>
-    <option>xor2</option>
-  </select>
-</span>
+<div>
+Example: <select id="select_source"></select>
+</div>
 
 <textarea id="input" rows="20" cols="80">
    =========
@@ -72,7 +63,7 @@ Example:
   </canvas>
 </div>
 
-<div id="and" style="display: none;"
+<div id="and" class="example_configuration"
 >                 =
                  =
    #######==     =     =========
@@ -92,7 +83,7 @@ Example:
    =========</div>
 
 
-<div id="gated" style="display: none;"
+<div id="gated" class="example_configuration"
 >  ####
   #  #
  =N###
@@ -117,7 +108,7 @@ Example:
 </div>
 
 
-<div id="or" style="display: none;"
+<div id="or" class="example_configuration"
 >                  =
                   =
    #######==   ===N===   =========
@@ -130,7 +121,7 @@ Example:
 </div>
 
 
-<div id="osc" style="display: none;"
+<div id="osc" class="example_configuration"
 >   =========
    =       =
  ==N==     =
@@ -140,7 +131,7 @@ Example:
    =========</div>
 
 
-<div id="smallosc" style="display: none;"
+<div id="smallosc" class="example_configuration"
 > ============================================================================
  =
 =N#
@@ -148,7 +139,7 @@ Example:
 </div>
 
 
-<div id="sr" style="display: none;"
+<div id="sr" class="example_configuration"
 >
   #      #
   #      #
@@ -174,7 +165,7 @@ Example:
 </div>
 
 
-<div id="store_hmm" style="display: none;"
+<div id="store_hmm" class="example_configuration"
 >
 
    ==========
@@ -193,7 +184,7 @@ Example:
             ====</div>
 
 
-<div id="xor" style="display: none;"
+<div id="xor" class="example_configuration"
 >
 
                   ==========================
@@ -217,7 +208,7 @@ Example:
                   ####################</div>
 
 
-<div id="xor2" style="display: none;"
+<div id="xor2" class="example_configuration"
 >
 
                   ==========================
@@ -246,6 +237,7 @@ Example:
 <script src="yoob/playfield.js"></script>
 <script src="yoob/playfield-html-view.js"></script>
 <script src="yoob/playfield-canvas-view.js"></script>
+<script src="yoob/preset-manager.js"></script>
 <script src="../script/circute.js"></script>
 <script>
   var pf;
@@ -322,11 +314,15 @@ Example:
     'step': 'step',
     'load': 'load',
     'edit': 'edit',
+    'reset': 'reset',
     'speed': 'speed',
-    'select': 'select_source',
     'source': 'input',
     'display': 'display_container'
   });
-  
   c.click_load();
+
+  e = (new yoob.PresetManager()).init({
+    selectElem: document.getElementById('select_source'),
+    controller: c
+  }).populateFromClass('example_configuration');
 </script>
