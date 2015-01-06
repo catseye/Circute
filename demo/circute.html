@@ -40,15 +40,7 @@ Speed: <input id="speed" type="range" min="0" max="200" value="0" />
 Example: <select id="select_source"></select>
 </div>
 
-<textarea id="input" rows="20" cols="80">
-   =========
-   =       =
- ==N==     =
- =   =     =
- =====     =
-   =       =
-   =========
-</textarea>
+<textarea id="input" rows="20" cols="80"></textarea>
 
 <div id="display_container">
   Depict with:
@@ -72,15 +64,7 @@ Example: <select id="select_source"></select>
  =   =     =   =   =   =     =   =
  =====     =   =====   =     =====
    =       =     =     =       =
-   ==============N==============
-
-   =========
-   =       =
- ==N==     =
- =   =     =
- =====     =
-   =       =
-   =========</div>
+   ==============N==============</div>
 
 
 <div id="gated" class="example_configuration"
@@ -324,5 +308,5 @@ Example: <select id="select_source"></select>
   e = (new yoob.PresetManager()).init({
     selectElem: document.getElementById('select_source'),
     controller: c
-  }).populateFromClass('example_configuration');
+  }).populateFromClass('example_configuration').select('osc');
 </script>
