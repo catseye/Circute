@@ -7,6 +7,7 @@ function launch(prefix, container, config) {
     "yoob/element-factory.js",
     "yoob/playfield.js",
     "yoob/playfield-html-view.js",
+    "yoob/playfield-canvas-view.js",
     "yoob/controller.js",
     "yoob/source-manager.js",
     "yoob/preset-manager.js",
@@ -22,39 +23,86 @@ function launch(prefix, container, config) {
     var subPanel = yoob.makeDiv(container);
     var selectConfiguration = yoob.makeSelect(subPanel, 'example configuration:', []);
 
+    yoob.makeLineBreak(subPanel);
+    var changeDepiction;
+    var selectDepiction = yoob.makeSelect(subPanel, 'depict using:', [
+      ['text', 'text'],
+      ['canvas', 'canvas']
+    ], function(value) {
+      changeDepiction(value);
+    });
+
     var displayContainer = yoob.makeDiv(container);
     displayContainer.id = 'display_container';
 
-    var generationDisplay = yoob.makePre(displayContainer);
-    generationDisplay.id = 'generation_display';
+    var displayText = yoob.makePre(displayContainer);
+
+    var displayCanvas = yoob.makeCanvas(displayContainer);
 
     var editor = yoob.makeTextArea(displayContainer, 40, 25);
 
-    var generationView = new yoob.PlayfieldHTMLView().init({
-      element: generationDisplay
+    var htmlView = new yoob.PlayfieldHTMLView().init({
+      element: displayText
     });
-
-    // NOTE this is kind of chintzy, but, oh well
-    generationView.draw = function() {
+    htmlView.draw = function() {
         this.element.innerHTML = this.pf.dump(dumpMapper);
     };
 
-    /* ----- launch, phase 2: connect the controller ----- */
+    // CanvasView
+    var colourMap = {
+        'Space': '#ffffff',
+        'Spark': '#ff0000',
+        'Tail': '#a0a0a0',
+        'Wire': '#ffff00',
+        'NAND': '#0000ff'
+    };
+    var canvasView = new yoob.PlayfieldCanvasView().init({
+      canvas: displayCanvas
+    });
+    canvasView.drawCell = function(ctx, value, playfieldX, playfieldY,
+                                   canvasX, canvasY, cellWidth, cellHeight) {
+       ctx.fillStyle = colourMap[value] || '#ffffff';
+       ctx.fillRect(canvasX, canvasY, cellWidth, cellHeight);
+    };
+
+    // Playfield
     var pf;
+
+    // "View Manager"
+    var currentView = 'text';
+    var views = {
+        'text': htmlView,
+        'canvas': canvasView
+    };
+    var draw = function(pf) {
+        views[currentView].setPlayfield(pf);
+        views[currentView].draw();
+    };
+    changeDepiction = function(value) {
+      if (value === 'text') {
+          displayText.style.display = 'block';
+          displayCanvas.style.display = 'none';
+      } else {
+          displayText.style.display = 'none';
+          displayCanvas.style.display = 'block';
+      }
+      currentView = value;
+      draw(pf);
+    }
+
+    /* ----- launch, phase 2: connect the controller ----- */
     var controller = (new yoob.Controller()).init({
       panelContainer: controlPanel,
       step: function() {
         var newPf = (new yoob.Playfield()).init({ defaultValue: 'Space' });
         evolve_playfield(pf, newPf);
         pf = newPf;
-        generationView.setPlayfield(pf);
-        generationView.draw();
+        draw(pf);
       },
       reset: function(text) {
         pf = (new yoob.Playfield()).init({ defaultValue: 'Space' });
         pf.load(0, 0, text, loadMapper);
-        generationView.setPlayfield(pf);
-        generationView.draw();
+        draw(pf);
       }
     });
     controller.clickStop();
@@ -62,7 +110,7 @@ function launch(prefix, container, config) {
     var sourceManager = (new yoob.SourceManager()).init({
       panelContainer: controlPanel,
       editor: editor,
-      hideDuringEdit: [generationDisplay],
+      hideDuringEdit: [displayText, displayCanvas],
       disableDuringEdit: [controller.panel],
       storageKey: 'circute.alp',
       onDone: function() {
